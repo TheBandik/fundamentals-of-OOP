@@ -152,3 +152,123 @@ GRANT ALL PRIVILEGES ON *.* TO 'test'@'%';
 FLUSH PRIVILEGES;
 
 ```
+
+## Создание образа
+
+Этапы создания образов:
++ Необходимо создать Dockerfile
++ Dockerfile помещается в папке приложения
++ Dockerfile содержит инструкции по создании образов
++ Нужно указать имя и тег для образа
++ Можно создавать контейнеры
+
+Пример содержимого Dockerfile:
+```dockerfile
+from python:alpine
+
+workdir /app
+
+copy . .
+
+cmd ["python", "main.py"]
+```
+Для содание образа используется команда:
+
+```
+docker build Dockerfile
+```
+
+Если хотим добавить имя и тег образу:
+
+```
+docker build Dockerfile -t myapp:3.1
+```
+
+### Пример приложения
+
+Приложение на python:
+
+```python
+print('Приветствую!')
+
+name = input('Введите своё имя: ')
+
+print(f'До свидания {name}!')
+```
+
+Содержимое Dockerfile:
+
+```dockerfile
+from python:alpine
+
+workdir /app
+
+copy . .
+
+cmd ["python3", "main.py"]
+```
+
+## Docker compose
+
+Декларативный подход к созданию котнейнеров, где можно запуск и останавливать несколько контейнеров одной командой. Позволяет автоматически создавать образы и контейнеры на их основе.
+
+Пример файла yaml:
+
+```yaml
+version: '3'
+
+services:
+    app:
+        build: ./app
+    mongo:
+        image: mongo
+```
+
+Для запуска используется команда:
+```
+docker-compose up
+```
+
+Для остановки используется команда:
+```
+docker-compose down
+```
+
+### Пример приложения
+
+Содержимое файла python:
+
+```python
+import pymongo
+
+MONGO_URL = 'mongodb://mongo:27017'
+client = pymongo.MongoClient(MONGO_URL)
+db = client.admin
+dbs_list = db.command('listDatabases')
+print(dbs_list)
+```
+
+Содержимое docker-compose.yaml:
+
+```yaml
+version: '3'
+
+services:
+    app:
+        build: ./app
+    mongo:
+        image: mongo
+```
+Содержимое Dockerfile:
+
+```dockerfile
+from python:alpine
+
+workdir /app
+
+copy . .
+
+run pip install pymongo
+
+cmd ["python3", "main.py"]
+```
