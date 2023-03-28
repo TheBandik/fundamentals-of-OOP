@@ -54,24 +54,18 @@ server.close()
 #### Клиент
 
 ```python
-from socket import socket, AF_INET, SOCK_RAW, IPPROTO_ICMP, setdefaulttimeout, timeout
+from socket import socket, AF_INET, SOCK_STREAM, IPPROTO_TCP
 
-# Сканер UDP портов
-def scanner_UDP(ip, port):
-  setdefaulttimeout(1.0)
+# Сканер TCP портов
+def scanner_TCP(ip, port):
   # Создание сокета
-  sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)
+  sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
   sock.settimeout(0.5)
-  # Отправка сообщения
-  sock.sendto(b'Test message', (ip, port))
-  # Попытка получения ответа
+  # Попытка установить соединение
   try:
-    sock.recvfrom(1024)
-    print(f'Port: {port} is open')
+    sock.connect((ip, port))
+    print(f'Port {port} is open')
     sock.close()
-  # Если ошибка timeout, то порт считается открытым
-  # except timeout:
-  #  print(f'Port: {port} is open')
   except:
     pass
 ```
